@@ -22,12 +22,20 @@ const exclusions: RegExp[] = [
     // /^\/@vite\/client$/,
     /^\/__inspect/,
     /^\/vite-sw-dev-server.js$/,
-    /^\/vite-sw-dev-server.ts$/
+    /^\/vite-sw-dev-server.ts$/,
+    /^\/__vite_ping$/,
 ]
 
 const shouldBeExcluded = (req: Request) => {
-    const path = new URL(req.url).pathname
-    return exclusions.some(re => path.match(re) !== null)
+    const url = new URL(req.url);
+    const path = url.pathname;
+    const protocol = url.protocol;
+  
+    if (!protocol.startsWith('http')) {
+      return true;
+    }
+  
+    return exclusions.some(re => path.match(re) !== null);
 };
 
 self.addEventListener('install', event => {
